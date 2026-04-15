@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: devboard_db
+    environment:
+      POSTGRES_DB: devboard
+      POSTGRES_USER: devboard_user
+      POSTGRES_PASSWORD: devboard_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - devboard_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: devboard_backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/devboard
+      SPRING_DATASOURCE_USERNAME: devboard_user
+      SPRING_DATASOURCE_PASSWORD: devboard_pass
+      JWT_SECRET: devboard_super_secret_jwt_key_change_this_in_production
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - devboard_network
+
+  frontend:
+    build:
+      context: ./frontend/devboard-frontend
+      dockerfile: Dockerfile
+    container_name: devboard_frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - devboard_network
+
+volumes:
+  postgres_data:
+
+networks:
+  devboard_network:
+    driver: bridge
