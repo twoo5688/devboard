@@ -6,8 +6,12 @@ import lombok.Data;
 
 @Data
 public class TaskRequest {
-    @NotBlank
-    private String title;
-    private String description;
-    private TaskStatus status;
+
+	@NotBlank
+	private String title;
+
+	private String description;
+
+	private TaskStatus status;
+
 }

@@ -13,37 +13,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private final TaskRepository taskRepository;
-    private final ProjectRepository projectRepository;
+	private final TaskRepository taskRepository;
 
-    public List<Task> getProjectTasks(Long projectId) {
-        return taskRepository.findByProjectId(projectId);
-    }
+	private final ProjectRepository projectRepository;
 
-    public Task createTask(Long projectId, TaskRequest request) {
-        var project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new RuntimeException("Project not found"));
-        Task task = Task.builder()
-            .title(request.getTitle())
-            .description(request.getDescription())
-            .status(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO)
-            .project(project)
-            .build();
-        return taskRepository.save(task);
-    }
+	public List<Task> getProjectTasks(Long projectId) {
+		return taskRepository.findByProjectId(projectId);
+	}
 
-    public Task updateTask(Long taskId, TaskRequest request) {
-        Task task = taskRepository.findById(taskId)
-            .orElseThrow(() -> new RuntimeException("Task not found"));
-        task.setTitle(request.getTitle());
-        task.setDescription(request.getDescription());
-        if (request.getStatus() != null) task.setStatus(request.getStatus());
-        return taskRepository.save(task);
-    }
+	public Task createTask(Long projectId, TaskRequest request) {
+		var project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new RuntimeException("Project not found"));
+		Task task = Task.builder()
+			.title(request.getTitle())
+			.description(request.getDescription())
+			.status(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO)
+			.project(project)
+			.build();
+		return taskRepository.save(task);
+	}
 
-    public void deleteTask(Long taskId) {
-        taskRepository.findById(taskId)
-            .orElseThrow(() -> new RuntimeException("Task not found"));
-        taskRepository.deleteById(taskId);
-    }
+	public Task updateTask(Long taskId, TaskRequest request) {
+		Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+		task.setTitle(request.getTitle());
+		task.setDescription(request.getDescription());
+		if (request.getStatus() != null)
+			task.setStatus(request.getStatus());
+		return taskRepository.save(task);
+	}
+
+	public void deleteTask(Long taskId) {
+		taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+		taskRepository.deleteById(taskId);
+	}
+
 }

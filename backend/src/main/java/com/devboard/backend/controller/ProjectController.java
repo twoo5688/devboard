@@ -3,6 +3,8 @@ package com.devboard.backend.controller;
 import com.devboard.backend.dto.ProjectRequest;
 import com.devboard.backend.entity.Project;
 import com.devboard.backend.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,27 +16,29 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
+@Tag(name = "Projects", description = "Project CRUD for the authenticated user")
 public class ProjectController {
 
-    private final ProjectService projectService;
+	private final ProjectService projectService;
 
-    @GetMapping
-    public ResponseEntity<List<Project>> getProjects(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(projectService.getUserProjects(userDetails.getUsername()));
-    }
+	@GetMapping
+	@Operation(summary = "List projects", description = "Returns all projects owned by the current user")
+	public ResponseEntity<List<Project>> getProjects(@AuthenticationPrincipal UserDetails userDetails) {
+		return ResponseEntity.ok(projectService.getUserProjects(userDetails.getUsername()));
+	}
 
-    @PostMapping
-    public ResponseEntity<Project> createProject(
-            @Valid @RequestBody ProjectRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(projectService.createProject(request, userDetails.getUsername()));
-    }
+	@PostMapping
+	@Operation(summary = "Create project")
+	public ResponseEntity<Project> createProject(@Valid @RequestBody ProjectRequest request,
+			@AuthenticationPrincipal UserDetails userDetails) {
+		return ResponseEntity.ok(projectService.createProject(request, userDetails.getUsername()));
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        projectService.deleteProject(id, userDetails.getUsername());
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete project")
+	public ResponseEntity<Void> deleteProject(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+		projectService.deleteProject(id, userDetails.getUsername());
+		return ResponseEntity.noContent().build();
+	}
+
 }

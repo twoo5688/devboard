@@ -14,6 +14,9 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,31 +29,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Email
-    @NotBlank
-    @Column(nullable = false, unique = true)
-    private String email;
+	@NotBlank
+	@Column(nullable = false)
+	private String name;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String password;
+	@Email
+	@NotBlank
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<Project> projects;
+	@NotBlank
+	@Column(nullable = false)
+	@JsonIgnore
+	private String password;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Project> projects;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
+	@PrePersist
+	protected void onCreate() {
+		createdAt = LocalDateTime.now();
+	}
+
 }

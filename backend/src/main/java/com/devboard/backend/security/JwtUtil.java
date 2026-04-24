@@ -13,46 +13,44 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+	@Value("${jwt.secret}")
+	private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+	@Value("${jwt.expiration}")
+	private long expiration;
 
-    public String generateToken(String username) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+	public String generateToken(String username) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + expiration);
 
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey())
-                .compact();
-    }
+		return Jwts.builder()
+			.subject(username)
+			.issuedAt(now)
+			.expiration(expiryDate)
+			.signWith(getSigningKey())
+			.compact();
+	}
 
-    public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
-    }
+	public String extractUsername(String token) {
+		return extractAllClaims(token).getSubject();
+	}
 
-    public boolean validateToken(String token) {
-        try {
-            Claims claims = extractAllClaims(token);
-            return claims.getExpiration().after(new Date());
-        } catch (Exception ex) {
-            return false;
-        }
-    }
+	public boolean validateToken(String token) {
+		try {
+			Claims claims = extractAllClaims(token);
+			return claims.getExpiration().after(new Date());
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
+	private Claims extractAllClaims(String token) {
+		return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+	}
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-    }
+	private SecretKey getSigningKey() {
+		return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+	}
+
 }

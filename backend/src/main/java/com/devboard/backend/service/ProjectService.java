@@ -13,32 +13,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectService {
 
-    private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
+	private final ProjectRepository projectRepository;
 
-    public List<Project> getUserProjects(String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-        return projectRepository.findByOwnerId(user.getId());
-    }
+	private final UserRepository userRepository;
 
-    public Project createProject(ProjectRequest request, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-        Project project = Project.builder()
-            .name(request.getName())
-            .description(request.getDescription())
-            .owner(user)
-            .build();
-        return projectRepository.save(project);
-    }
+	public List<Project> getUserProjects(String email) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+		return projectRepository.findByOwnerId(user.getId());
+	}
 
-    public void deleteProject(Long projectId, String email) {
-        Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new RuntimeException("Project not found"));
-        if (!project.getOwner().getEmail().equals(email)) {
-            throw new RuntimeException("Not authorized");
-        }
-        projectRepository.delete(project);
-    }
+	public Project createProject(ProjectRequest request, String email) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+		Project project = Project.builder()
+			.name(request.getName())
+			.description(request.getDescription())
+			.owner(user)
+			.build();
+		return projectRepository.save(project);
+	}
+
+	public void deleteProject(Long projectId, String email) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new RuntimeException("Project not found"));
+		if (!project.getOwner().getEmail().equals(email)) {
+			throw new RuntimeException("Not authorized");
+		}
+		projectRepository.delete(project);
+	}
+
 }
