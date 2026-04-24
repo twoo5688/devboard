@@ -35,7 +35,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend/devboard-frontend
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: devboard_frontend
     ports:

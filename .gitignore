@@ -37,6 +37,10 @@ dist/
 .vscode/
 .idea/
 
+# Local Maven cache (CI / sandbox)
+.m2-repo/
+.m2/
+
 # Backend
 backend/target/
 backend/.mvn/
