@@ -1,0 +1,99 @@
+<div class="page">
+  <header class="toolbar">
+    <button type="button" class="btn-link" routerLink="/projects">← Back to projects</button>
+    <div class="toolbar-actions">
+      <button type="button" class="btn-primary" (click)="openModal()">New task</button>
+    </div>
+  </header>
+
+  @if (errorMessage(); as err) {
+    <div class="alert" role="alert">{{ err }}</div>
+  }
+
+  @if (loading()) {
+    <div class="spinner-wrap" aria-busy="true">
+      <div class="spinner"></div>
+      <p class="muted">Loading board…</p>
+    </div>
+  } @else {
+    <div cdkDropListGroup class="board">
+      <section class="column card">
+        <h2>To do</h2>
+        <div
+          cdkDropList
+          [id]="todoListId"
+          [cdkDropListData]="todoTasks()"
+          [cdkDropListConnectedTo]="[inProgressListId, doneListId]"
+          (cdkDropListDropped)="drop($event, 'TODO')"
+          class="list"
+        >
+          @for (t of todoTasks(); track t.id) {
+            <article cdkDrag class="task-card">
+              <div class="task-head">
+                <h3>{{ t.title }}</h3>
+                <button type="button" class="btn-ghost" (click)="deleteTask(t, $event)">Delete</button>
+              </div>
+              @if (t.description) {
+                <p class="task-desc">{{ t.description }}</p>
+              }
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="column card">
+        <h2>In progress</h2>
+        <div
+          cdkDropList
+          [id]="inProgressListId"
+          [cdkDropListData]="inProgressTasks()"
+          [cdkDropListConnectedTo]="[todoListId, doneListId]"
+          (cdkDropListDropped)="drop($event, 'IN_PROGRESS')"
+          class="list"
+        >
+          @for (t of inProgressTasks(); track t.id) {
+            <article cdkDrag class="task-card">
+              <div class="task-head">
+                <h3>{{ t.title }}</h3>
+                <button type="button" class="btn-ghost" (click)="deleteTask(t, $event)">Delete</button>
+              </div>
+              @if (t.description) {
+                <p class="task-desc">{{ t.description }}</p>
+              }
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="column card">
+        <h2>Done</h2>
+        <div
+          cdkDropList
+          [id]="doneListId"
+          [cdkDropListData]="doneTasks()"
+          [cdkDropListConnectedTo]="[todoListId, inProgressListId]"
+          (cdkDropListDropped)="drop($event, 'DONE')"
+          class="list"
+        >
+          @for (t of doneTasks(); track t.id) {
+            <article cdkDrag class="task-card">
+              <div class="task-head">
+                <h3>{{ t.title }}</h3>
+                <button type="button" class="btn-ghost" (click)="deleteTask(t, $event)">Delete</button>
+              </div>
+              @if (t.description) {
+                <p class="task-desc">{{ t.description }}</p>
+              }
+            </article>
+          }
+        </div>
+      </section>
+    </div>
+  }
+
+  <app-task-modal
+    [open]="modalOpen()"
+    (closed)="closeModal()"
+    (submitted)="onTaskCreate($event)"
+  />
+</div>

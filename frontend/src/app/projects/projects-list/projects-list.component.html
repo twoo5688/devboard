@@ -1,0 +1,72 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Projects</h1>
+      <p class="muted">Manage your workspaces</p>
+    </div>
+  </header>
+
+  @if (errorMessage(); as err) {
+    <div class="alert" role="alert">{{ err }}</div>
+  }
+
+  <section class="create card">
+    <h2>New project</h2>
+    <form [formGroup]="createForm" (ngSubmit)="createProject()">
+      <div class="row">
+        <label class="grow">
+          <span>Name</span>
+          <input type="text" formControlName="name" />
+          @if (createForm.controls.name.invalid && createForm.controls.name.touched) {
+            <small class="field-error">Name is required</small>
+          }
+        </label>
+        <label class="grow">
+          <span>Description (optional)</span>
+          <input type="text" formControlName="description" />
+        </label>
+        <button type="submit" class="btn-primary" [disabled]="creating()">
+          {{ creating() ? 'Saving…' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  @if (loading()) {
+    <div class="spinner-wrap" aria-busy="true">
+      <div class="spinner"></div>
+      <p class="muted">Loading projects…</p>
+    </div>
+  } @else if (projects().length === 0) {
+    <div class="empty card">
+      <h2>No projects yet</h2>
+      <p class="muted">Create your first project above to start tracking tasks.</p>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (p of projects(); track p.id) {
+        <article class="project-card card" (click)="openBoard(p.id)" (keyup.enter)="openBoard(p.id)" tabindex="0" role="button">
+          <div class="card-top">
+            <h3>{{ p.name }}</h3>
+            <button
+              type="button"
+              class="btn-ghost"
+              (click)="deleteProject(p.id, $event)"
+              aria-label="Delete project"
+            >
+              Delete
+            </button>
+          </div>
+          @if (p.description) {
+            <p class="desc">{{ p.description }}</p>
+          } @else {
+            <p class="desc muted">No description</p>
+          }
+          @if (p.createdAt) {
+            <p class="meta muted">Created {{ p.createdAt | date: 'medium' }}</p>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>

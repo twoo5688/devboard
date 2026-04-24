@@ -1,0 +1,58 @@
+<div class="auth-page">
+  <div class="card">
+    <h1>Create account</h1>
+    <p class="muted">Start organizing work with DevBoard</p>
+
+    @if (errorMessage(); as err) {
+      <div class="alert" role="alert">{{ err }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>
+        <span>Name</span>
+        <input type="text" formControlName="name" autocomplete="name" />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <small class="field-error">Name is required</small>
+        }
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" autocomplete="email" />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <small class="field-error">Valid email is required</small>
+        }
+      </label>
+
+      <label>
+        <span>Password</span>
+        <input type="password" formControlName="password" autocomplete="new-password" />
+        @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+          <small class="field-error">Password is required</small>
+        } @else if (form.controls.password.hasError('minlength') && form.controls.password.touched) {
+          <small class="field-error">At least 8 characters</small>
+        }
+      </label>
+
+      <label>
+        <span>Confirm password</span>
+        <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
+        @if (form.controls.confirmPassword.invalid && form.controls.confirmPassword.touched) {
+          <small class="field-error">Confirmation is required</small>
+        }
+        @if (passwordMismatch()) {
+          <small class="field-error">Passwords do not match</small>
+        }
+      </label>
+
+      <button type="submit" class="btn-primary" [disabled]="submitting()">
+        {{ submitting() ? 'Creating…' : 'Create account' }}
+      </button>
+    </form>
+
+    <p class="footer-link">
+      Already have an account?
+      <a routerLink="/login">Sign in</a>
+    </p>
+  </div>
+</div>
