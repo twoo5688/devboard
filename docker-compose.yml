@@ -1,9 +1,11 @@
 version: '3.8'
 
 services:
-  postgres:
+  db:
     image: postgres:16
     container_name: devboard_db
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: devboard
       POSTGRES_USER: devboard_user
@@ -14,6 +16,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - devboard_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devboard_user -d devboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -21,15 +28,18 @@ services:
       dockerfile: Dockerfile
     container_name: devboard_backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/devboard
+      DB_URL: jdbc:postgresql://db:5432/devboard
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/devboard
       SPRING_DATASOURCE_USERNAME: devboard_user
       SPRING_DATASOURCE_PASSWORD: devboard_pass
-      JWT_SECRET: devboard_super_secret_jwt_key_change_this_in_production
-      JWT_EXPIRATION: 86400000
+      JWT_SECRET: ${JWT_SECRET:-devboard_super_secret_jwt_key_change_this_in_production}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      CORS_ALLOWED_ORIGINS: http://localhost:4200
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      db:
+        condition: service_healthy
     networks:
       - devboard_network
 

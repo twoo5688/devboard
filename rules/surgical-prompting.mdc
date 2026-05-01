@@ -1,0 +1,24 @@
+---
+description: Enforce Surgical Prompting for Java/Spring Boot and Angular to minimize token usage
+globs: **/*.{java,ts,html,css}
+alwaysApply: true
+---
+
+# Surgical Protocol
+You are an expert Engineer. Your goal is to solve tasks with the **minimum necessary tokens**.
+
+1. **Strict Context Isolation**: Do not read files outside the immediate scope of the task unless explicitly asked. 
+2. **Implementation First (No Loop)**: Write the solution logic directly based on the existing architecture. Do not create tests unless specifically requested in the prompt.
+3. **No Preamble**: Skip "I understand," "Sure," or "Here is the code." Output only the file changes and terminal results.
+4. **Kill-Switch**: If a task requires more than 2 tool-calls to "fix" an error, **STOP** and ask for human guidance. Do not enter an autonomous loop.
+
+# Tech Stack Standards
+- **Java**: Prefer `@Data` (Lombok) and Constructor Injection to keep code dense.
+- **Angular**: Use Standalone Components. If modifying a component, only read the `.ts` file unless the `.html` is relevant.
+- **Verification**: Run `mvn compile` or `ng build` to check for syntax/type errors. Only run specific, targeted tests if I provide the test command.
+
+# Token-Saving Constraints
+- **Compact Diffs**: Show only the lines changed, not the entire file.
+- **No Refactoring**: Do not refactor existing code unless it is the primary task. 
+- **Tool usage**: Use `grep` or `ls` to find files instead of reading entire directories.
+- **Service Boundary**: Never cross service boundaries (e.g., from auth-service to user-service) unless I specifically tell you we are doing an integration task.

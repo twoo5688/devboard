@@ -25,7 +25,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "tasks", indexes = {
+	@jakarta.persistence.Index(name = "idx_task_project", columnList = "project_id"),
+	@jakarta.persistence.Index(name = "idx_task_status", columnList = "status")
+})
 @Data
 @Builder
 @NoArgsConstructor
