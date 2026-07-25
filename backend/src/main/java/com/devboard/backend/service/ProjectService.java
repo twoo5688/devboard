@@ -6,6 +6,7 @@ import com.devboard.backend.entity.User;
 import com.devboard.backend.repository.ProjectRepository;
 import com.devboard.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -22,6 +23,10 @@ public class ProjectService {
 		return projectRepository.findByOwnerId(user.getId());
 	}
 
+	public Project getProject(Long projectId, String email) {
+		return getOwnedProject(projectId, email);
+	}
+
 	public Project createProject(ProjectRequest request, String email) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 		Project project = Project.builder()
@@ -32,13 +37,20 @@ public class ProjectService {
 		return projectRepository.save(project);
 	}
 
+	public Project updateProject(Long projectId, ProjectRequest request, String email) {
+		Project project = getOwnedProject(projectId, email);
+		project.setName(request.getName());
+		project.setDescription(request.getDescription());
+		return projectRepository.save(project);
+	}
+
 	public void deleteProject(Long projectId, String email) {
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new RuntimeException("Project not found"));
-		if (!project.getOwner().getEmail().equals(email)) {
-			throw new RuntimeException("Not authorized");
-		}
-		projectRepository.delete(project);
+		projectRepository.delete(getOwnedProject(projectId, email));
+	}
+
+	private Project getOwnedProject(Long projectId, String email) {
+		return projectRepository.findByIdAndOwnerEmail(projectId, email)
+			.orElseThrow(() -> new AccessDeniedException("Project not found or access denied"));
 	}
 
 }

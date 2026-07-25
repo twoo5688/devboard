@@ -84,7 +84,9 @@ All authenticated routes expect header: `Authorization: Bearer <jwt>`.
 | `POST` | `/api/auth/register` | Register; returns token |
 | `POST` | `/api/auth/login` | Login; returns token |
 | `GET` | `/api/projects` | List current user’s projects |
+| `GET` | `/api/projects/{id}` | Get an owned project |
 | `POST` | `/api/projects` | Create project |
+| `PUT` | `/api/projects/{id}` | Update an owned project |
 | `DELETE` | `/api/projects/{id}` | Delete project |
 | `GET` | `/api/projects/{projectId}/tasks` | List tasks |
 | `POST` | `/api/projects/{projectId}/tasks` | Create task |

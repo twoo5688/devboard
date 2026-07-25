@@ -27,11 +27,25 @@ public class ProjectController {
 		return ResponseEntity.ok(projectService.getUserProjects(userDetails.getUsername()));
 	}
 
+	@GetMapping("/{id}")
+	@Operation(summary = "Get project")
+	public ResponseEntity<Project> getProject(@PathVariable Long id,
+			@AuthenticationPrincipal UserDetails userDetails) {
+		return ResponseEntity.ok(projectService.getProject(id, userDetails.getUsername()));
+	}
+
 	@PostMapping
 	@Operation(summary = "Create project")
 	public ResponseEntity<Project> createProject(@Valid @RequestBody ProjectRequest request,
 			@AuthenticationPrincipal UserDetails userDetails) {
 		return ResponseEntity.ok(projectService.createProject(request, userDetails.getUsername()));
+	}
+
+	@PutMapping("/{id}")
+	@Operation(summary = "Update project")
+	public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody ProjectRequest request,
+			@AuthenticationPrincipal UserDetails userDetails) {
+		return ResponseEntity.ok(projectService.updateProject(id, request, userDetails.getUsername()));
 	}
 
 	@DeleteMapping("/{id}")
