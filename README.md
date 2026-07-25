@@ -51,8 +51,11 @@ DevBoard is a **portfolio-grade, full-stack Kanban project management app**: JWT
 From the repository root:
 
 ```bash
+cp .env.example .env
 docker compose up --build
 ```
+
+The example values are intended for local development. Change `DB_PASSWORD` and `JWT_SECRET` before deploying outside your machine.
 
 Then:
 
@@ -61,7 +64,7 @@ Then:
 | Frontend  | http://localhost:4200 |
 | Backend   | http://localhost:8080 |
 | Swagger UI | http://localhost:8080/swagger-ui/index.html |
-| Postgres  | `localhost:5432` (user/password in `docker-compose.yml`) |
+| Postgres  | `localhost:5432` (credentials configured in `.env`) |
 
 **Smoke flow:** register → create a project → open the board → add tasks → drag tasks between columns. Use the browser **Network** tab to confirm `/api/...` calls return **200/201/204**.
 

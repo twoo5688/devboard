@@ -1,15 +1,11 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:16
     container_name: devboard_db
-    env_file:
-      - .env
     environment:
-      POSTGRES_DB: devboard
-      POSTGRES_USER: devboard_user
-      POSTGRES_PASSWORD: devboard_pass
+      POSTGRES_DB: ${DB_NAME:-devboard}
+      POSTGRES_USER: ${DB_USER:-devboard_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devboard_pass}
     ports:
       - "5432:5432"
     volumes:
@@ -17,7 +13,7 @@ services:
     networks:
       - devboard_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U devboard_user -d devboard"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,18 +24,23 @@ services:
       dockerfile: Dockerfile
     container_name: devboard_backend
     environment:
-      DB_URL: jdbc:postgresql://db:5432/devboard
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/devboard
-      SPRING_DATASOURCE_USERNAME: devboard_user
-      SPRING_DATASOURCE_PASSWORD: devboard_pass
+      DB_URL: ${DB_URL:-jdbc:postgresql://db:5432/${DB_NAME:-devboard}}
+      DB_USER: ${DB_USER:-devboard_user}
+      DB_PASSWORD: ${DB_PASSWORD:-devboard_pass}
       JWT_SECRET: ${JWT_SECRET:-devboard_super_secret_jwt_key_change_this_in_production}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
-      CORS_ALLOWED_ORIGINS: http://localhost:4200
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
     networks:
       - devboard_network
 
@@ -51,7 +52,8 @@ services:
     ports:
       - "4200:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - devboard_network
 

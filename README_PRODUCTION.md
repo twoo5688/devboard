@@ -39,15 +39,15 @@ cd devboard
 Copy the example `.env` file and customize it:
 
 ```bash
-# Using the provided .env as a template
-cat .env
+cp .env.example .env
 ```
 
 ### 2.2 Edit `.env` with your configuration
 
 ```bash
 # Database Configuration
-DB_URL=jdbc:postgresql://localhost:5432/devboard
+DB_NAME=devboard
+DB_URL=jdbc:postgresql://db:5432/devboard
 DB_USER=devboard_user
 DB_PASSWORD=your_secure_db_password_here
 
